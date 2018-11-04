@@ -9,9 +9,9 @@
     align-content: center;
     justify-content: center;
     grid-template-rows: repeat(1, 250px);
-    grid-template-columns: repeat(auto-fill, 200px);
+    grid-template-columns: repeat(auto-fill, 250px);
     column-gap: 2px;
-    width: 67%;
+    width: 80%;
     height: auto;
     margin: 0px auto;
     padding: 40px;
@@ -57,7 +57,21 @@
     /* to look smaller so create effect of pushing the button */
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
 }
+@media(max-width:1200px) {
+    .container {
+        
+        padding: 20px;
+        margin:0 auto;
+    }
+}
 
+@media(max-width:900px) {
+    .container {
+        width: 600px;
+        padding: 20px;
+        margin:0 auto;
+    }
+}
 @media(max-width:500px) {
     .container {
         width: 400px;
