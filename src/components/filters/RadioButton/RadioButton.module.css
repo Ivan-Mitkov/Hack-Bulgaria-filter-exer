@@ -1,0 +1,7 @@
+.textSize {
+    font-size: 0.9rem;
+    width: 1em;
+    height: 1em;
+    border: 1px solid gray;
+    color: rgb(11, 0, 48);
+}

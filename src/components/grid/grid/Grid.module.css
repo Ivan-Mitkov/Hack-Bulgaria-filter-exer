@@ -1,0 +1,67 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    grid-template-rows: repeat(1, 250px);
+    grid-template-columns: repeat(auto-fill, 200px);
+    column-gap: 2px;
+    width: 67%;
+    height: auto;
+    margin: 0px auto;
+    padding: 40px;
+    grid-auto-rows: 250px;
+    grid-auto-flow: row;
+    border: 3px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
+    background-color: rgba(248, 248, 248, 0.5);
+}
+
+.item {
+    display: flex;
+    background-color: #ddd;
+    margin: 10px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(177, 177, 177);
+    border-radius: 10px;
+    color: rgb(11, 0, 48);
+    background-color: rgba(252, 252, 252, 0.4);
+    box-shadow: 0 0.1rem 0.5rem rgba(0, 0, 0, 0.2);
+}
+.title{
+    font-size: 1.5rem;
+}
+
+.item:hover {
+    /* btn to move up */
+    transform: translateY(-0.2rem);
+    /* offset-x | offset-y | blur-radius | spread-radius | color */
+    box-shadow: 0 1rem 1.5rem rgba(0, 0, 0, 0.5);
+}
+
+.item:active {
+    transform: translateY(-0.1rem);
+    /* to look smaller so create effect of pushing the button */
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+.item::selection {
+    transform: translateY(-0.1rem);
+    /* to look smaller so create effect of pushing the button */
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+@media(max-width:500px) {
+    .container {
+        width: 400px;
+        padding: 20px;
+        margin:0 auto;
+    }
+}
