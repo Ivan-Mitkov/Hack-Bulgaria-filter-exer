@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import "./App.css";
 import axios from "axios";
+import { connect } from "react-redux";
 import Filters from "./components/filters/Filters/Filters";
 import Grid from "./components/grid/grid/Grid";
+import{isChecked,select,input} from './store/actions/filters.js';
 
 class App extends Component {
   state = {
@@ -10,6 +12,7 @@ class App extends Component {
       company: [],
       companyType: []
     },
+    options: [],
     isActiv: true,
     companyType: "",
     search: null,
@@ -46,7 +49,7 @@ class App extends Component {
     axios
       .get("https://my-json-server.typicode.com/HackSoftware/companies.db/db")
       .then(response => {
-        console.log("Axios response.data: ", response.data);
+        // console.log("Axios response.data: ", response.data);
         this.setState({ data: response.data }, this.createOptionsForSelect);
       })
       .catch(err => {
@@ -121,16 +124,16 @@ class App extends Component {
   };
 
   createOptionsForSelect = () => {
-    console.log(this.state.data.companyType);
     const options = this.state.data.companyType.map(x => x);
     const addedEmptyOption = { id: 0, title: "" };
     const result = [addedEmptyOption, ...options];
+    this.setState({ options: result });
     return result;
   };
 
   render() {
     // let companies = this.createCompaniesList();
-    let companyType = this.state.data.companyType;
+    let companyType = this.state.options;
     let filteredArr = this.filterData();
 
     let grid = null;
@@ -161,4 +164,16 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapDispatchToProps = dispatch => {
+  return {
+    //pass and execute action creators
+    handleIsChecked: () => dispatch(isChecked()),
+    handleSelectChange:(event)=>dispatch(select(event)),
+    handleInputChange:(event)=>dispatch(input(event))
+  };
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(App);
