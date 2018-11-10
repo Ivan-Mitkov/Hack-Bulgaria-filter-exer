@@ -17,6 +17,7 @@ class App extends Component {
   };
   componentDidMount() {
     this.fetchInitialData();
+
   }
   componentDidUpdate(prevProps, prevState) {
     console.log("CDU");
@@ -39,7 +40,7 @@ class App extends Component {
     );
     fetch(request)
       .then(response => response.json())
-      .then(response => this.setState({ data: response }))
+      .then(response => this.setState({ data: response },this.createOptionsForSelect))
       .catch(error => console.log(error));
   };
   fetchSearchData = () => {
@@ -97,6 +98,7 @@ class App extends Component {
   };
 
   createOptionsForSelect=()=>{
+    console.log(this.state.data.companyType);
     const options=this.state.data.companyType.map(x => x);
     const addedEmptyOption={id:0,title:''}
     const result=[
@@ -109,7 +111,7 @@ class App extends Component {
 
   render() {
     // let companies = this.createCompaniesList();
-    let companyType = this.createOptionsForSelect();    
+    let companyType = this.state.data.companyType;    
     let filteredArr = this.filterData();
 
     let grid = null;
