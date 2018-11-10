@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
+import axios from "axios";
 import Filters from "./components/filters/Filters/Filters";
 import Grid from "./components/grid/grid/Grid";
 
@@ -17,7 +18,6 @@ class App extends Component {
   };
   componentDidMount() {
     this.fetchInitialData();
-
   }
   componentDidUpdate(prevProps, prevState) {
     console.log("CDU");
@@ -35,29 +35,48 @@ class App extends Component {
   }
 
   fetchInitialData = () => {
-    const request = new Request(
-      "https://my-json-server.typicode.com/HackSoftware/companies.db/db"
-    );
-    fetch(request)
-      .then(response => response.json())
-      .then(response => this.setState({ data: response },this.createOptionsForSelect))
-      .catch(error => console.log(error));
+    // const request = new Request(
+    //   "https://my-json-server.typicode.com/HackSoftware/companies.db/db"
+    // );
+    // fetch(request)
+    //   .then(response => response.json())
+    //   .then(response => this.setState({ data: response },this.createOptionsForSelect))
+    //   .catch(error => console.log(error));
+
+    axios
+      .get("https://my-json-server.typicode.com/HackSoftware/companies.db/db")
+      .then(response => {
+        console.log("Axios response.data: ", response.data);
+        this.setState({ data: response.data }, this.createOptionsForSelect);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
   fetchSearchData = () => {
     let baseUrl = `https://my-json-server.typicode.com/HackSoftware/companies.db/company?q=`;
     baseUrl += this.state.search;
     // console.log(baseUrl);
-    const request = new Request(baseUrl);
-    fetch(request)
-      .then(response => response.json())
-      .then(response => this.setState({ searched: response }))
-      .catch(error => console.log(error));
+    // const request = new Request(baseUrl);
+    // fetch(request)
+    //   .then(response => response.json())
+    //   .then(response => this.setState({ searched: response }))
+    //   .catch(error => console.log(error));
+
+    axios
+      .get(baseUrl)
+      .then(response => {
+        this.setState({ searched: response.data });
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   filterData = () => {
     let filtered = [];
-    if (!this.state.initFilter && this.state.searched&&this.state.search) {
-      filtered = this.state.searched
+    if (!this.state.initFilter && this.state.searched && this.state.search) {
+      filtered = this.state.searched;
     } else if (this.state.searched) {
       // console.log("In filter");
       filtered = this.state.searched
@@ -84,34 +103,34 @@ class App extends Component {
         companyType: event.target.value,
         initFilter: true
       });
-    }else{
+    } else {
       this.setState({
         companyType: event.target.value,
         initFilter: false
-    })
-  }
+      });
+    }
   };
   //searchbar
   handleInputChange = event => {
     // console.log(event.target.value)
-    this.setState({ search: event.target.value, initFilter: false,companyType:'' });
+    this.setState({
+      search: event.target.value,
+      initFilter: false,
+      companyType: ""
+    });
   };
 
-  createOptionsForSelect=()=>{
+  createOptionsForSelect = () => {
     console.log(this.state.data.companyType);
-    const options=this.state.data.companyType.map(x => x);
-    const addedEmptyOption={id:0,title:''}
-    const result=[
-      addedEmptyOption,
-      ...options
-    ]
+    const options = this.state.data.companyType.map(x => x);
+    const addedEmptyOption = { id: 0, title: "" };
+    const result = [addedEmptyOption, ...options];
     return result;
-
-  }
+  };
 
   render() {
     // let companies = this.createCompaniesList();
-    let companyType = this.state.data.companyType;    
+    let companyType = this.state.data.companyType;
     let filteredArr = this.filterData();
 
     let grid = null;
