@@ -13,26 +13,32 @@ class App extends Component {
       companyType: []
     },
     options: [],
-    isActiv: true,
-    companyType: "",
-    search: null,
+    // isActiv: true,
+    // companyType: "",
+    // search: null,
     searched: null,
-    initFilter: false
+    // initFilter: false
   };
   componentDidMount() {
+    console.log('CDM:',this.props.filter)
     this.fetchInitialData();
+   
   }
   componentDidUpdate(prevProps, prevState) {
     console.log("CDU");
     // console.log(prevState.search);
+    // console.log('Prev Props',prevProps);
+    // console.log('This.props',this.props);
+    console.log( (this.props.search &&!prevProps.search)||   
+      prevProps.search !== this.props.search)
     if (
-      this.state.search &&
-      ((!this.state.search && prevState.search) ||
-        prevState.search !== this.state.search)
+      (this.props.search &&!prevProps.search)||
+      // ((!prevProps.search && this.props.search) ||
+        prevProps.search !== this.props.search
     ) {
       this.fetchSearchData();
     }
-    if (this.state.search === "" && prevState.search !== this.state.search) {
+    if (this.props.search === "" && prevProps.search !== this.props.search) {
       this.setState({ searched: null });
     }
   }
@@ -58,7 +64,7 @@ class App extends Component {
   };
   fetchSearchData = () => {
     let baseUrl = `https://my-json-server.typicode.com/HackSoftware/companies.db/company?q=`;
-    baseUrl += this.state.search;
+    baseUrl += this.props.search;
     // console.log(baseUrl);
     // const request = new Request(baseUrl);
     // fetch(request)
@@ -74,54 +80,57 @@ class App extends Component {
       .catch(err => {
         console.log(err);
       });
+      
   };
 
   filterData = () => {
     let filtered = [];
-    if (!this.state.initFilter && this.state.searched && this.state.search) {
+    console.log('Filtered: ',this.props);
+    console.log(this.state.searched);
+    if (!this.props.initFilter && this.state.searched && this.props.search) {
       filtered = this.state.searched;
     } else if (this.state.searched) {
       // console.log("In filter");
       filtered = this.state.searched
-        .filter(x => x.type === this.state.companyType)
-        .filter(y => y.active === this.state.isActiv);
+        .filter(x => x.type === this.props.companyType)
+        .filter(y => y.active === this.props.isActiv);
     } else if (this.state.data.company) {
       filtered = this.state.data.company
-        .filter(x => x.type === this.state.companyType)
-        .filter(y => y.active === this.state.isActiv);
+        .filter(x => x.type === this.props.companyType)
+        .filter(y => y.active === this.props.isActiv);
     }
-    // console.log(filtered);
+    console.log('Filtered: ',filtered);
     return filtered;
   };
   //onClickHandlers
   //radio
-  handleIsChecked = () => {
-    this.setState({ isActiv: !this.state.isActiv, initFilter: true });
-  };
+  // handleIsChecked = () => {
+  //   this.setState({ isActiv: !this.state.isActiv, initFilter: true });
+  // };
   //dropdown
-  handleSelectChange = event => {
-    // console.log(event.target.value)
-    if (event.target.value) {
-      this.setState({
-        companyType: event.target.value,
-        initFilter: true
-      });
-    } else {
-      this.setState({
-        companyType: event.target.value,
-        initFilter: false
-      });
-    }
-  };
+  // handleSelectChange = event => {
+  //   // console.log(event.target.value)
+  //   if (event.target.value) {
+  //     this.setState({
+  //       companyType: event.target.value,
+  //       initFilter: true
+  //     });
+  //   } else {
+  //     this.setState({
+  //       companyType: event.target.value,
+  //       initFilter: false
+  //     });
+  //   }
+  // };
   //searchbar
-  handleInputChange = event => {
-    // console.log(event.target.value)
-    this.setState({
-      search: event.target.value,
-      initFilter: false,
-      companyType: ""
-    });
-  };
+  // handleInputChange = event => {
+  //   // console.log(event.target.value)
+  //   this.setState({
+  //     search: event.target.value,
+  //     initFilter: false,
+  //     companyType: ""
+  //   });
+  // };
 
   createOptionsForSelect = () => {
     const options = this.state.data.companyType.map(x => x);
@@ -134,10 +143,11 @@ class App extends Component {
   render() {
     // let companies = this.createCompaniesList();
     let companyType = this.state.options;
+    // console.log('RENDER: ', this.props)
     let filteredArr = this.filterData();
-
+    console.log(filteredArr)
     let grid = null;
-    if (!this.state.search && !this.state.initFilter) {
+    if (!this.props.search && !this.props.initFilter) {
       grid = <Grid data={this.state.data.company} />;
     } else if (filteredArr.length > 0) {
       grid = <Grid data={filteredArr} />;
@@ -148,19 +158,28 @@ class App extends Component {
       <div className="App">
         <div>
           <Filters
-            handleIsChecked={this.handleIsChecked}
+            handleIsChecked={this.props.handleIsChecked}
             options={companyType}
-            handleSelectChange={this.handleSelectChange}
-            selectValue={this.state.companyType}
-            checked={this.state.isActiv}
-            handleInputChange={this.handleInputChange}
-            search={this.state.search}
-            searchedWord={this.state.search || ""}
+            handleSelectChange={this.props.handleSelectChange}
+            selectValue={this.props.companyType}
+            checked={this.props.isActiv}
+            handleInputChange={this.props.handleInputChange}
+            search={this.props.search}
+            searchedWord={this.props.search || ""}
           />
         </div>
         <div>{grid}</div>
       </div>
     );
+  }
+}
+const mapStateToProps=state=>{
+  console.log('State to props:', state)
+  return{
+    isActiv:state.filter.isActiv,
+    initFilter:state.filter.initFilter,
+    companyType:state.filter.companyType,
+    search:state.filter.search
   }
 }
 
@@ -174,6 +193,6 @@ const mapDispatchToProps = dispatch => {
 };
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(App);
