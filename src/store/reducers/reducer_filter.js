@@ -6,7 +6,7 @@ const initialState={
 }
 
 const filterReducer=(state=initialState,action)=>{
-    console.log('Reducer: ',state)
+    // console.log('Reducer: ',state)
     switch(action.type){
         case 'ISCHECKED':
         return{
@@ -17,7 +17,8 @@ const filterReducer=(state=initialState,action)=>{
         case 'SELECT':
         return{
             ...state,
-            companyType:action.payload
+            companyType:action.payload,
+            initFilter:true
         }
         case 'INPUT':
         return{

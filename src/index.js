@@ -6,13 +6,15 @@ import { Provider } from "react-redux";
 
 import "./index.css";
 import App from "./App";
-import filterReducer from "./store/reducers/reducer";
+import filterReducer from "./store/reducers/reducer_filter";
+import fetchReducer from './store/reducers/reducer_fetch';
 import * as serviceWorker from "./serviceWorker";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const rootReducer = combineReducers({
-  filter: filterReducer
+  filter: filterReducer,
+  fetch:fetchReducer
 });
 //create simple middleware for logging
 const logger = store => {

@@ -4,37 +4,40 @@ import axios from "axios";
 import { connect } from "react-redux";
 import Filters from "./components/filters/Filters/Filters";
 import Grid from "./components/grid/grid/Grid";
-import{isChecked,select,input} from './store/actions/filters.js';
+import { isChecked, select, input } from "./store/actions/action_filters.js";
+import { fetchInitialData } from "./store/actions/action_fetch.js";
 
 class App extends Component {
   state = {
-    data: {
-      company: [],
-      companyType: []
-    },
-    options: [],
+    // data: {
+    //   company: [],
+    //   companyType: []
+    // },
+    // options: [],
     // isActiv: true,
     // companyType: "",
     // search: null,
-    searched: null,
+    searched: null
     // initFilter: false
   };
   componentDidMount() {
-    console.log('CDM:',this.props.filter)
-    this.fetchInitialData();
-   
+    // console.log('CDM:',this.props.filter)
+    // console.log("CDM", this.props);
+    this.props.fetchInitialData();
+    
   }
   componentDidUpdate(prevProps, prevState) {
-    console.log("CDU");
+    console.log("CDU", this.props);
     // console.log(prevState.search);
     // console.log('Prev Props',prevProps);
     // console.log('This.props',this.props);
-    console.log( (this.props.search &&!prevProps.search)||   
-      prevProps.search !== this.props.search)
+    // console.log( (this.props.search &&!prevProps.search)||
+    //   prevProps.search !== this.props.search)
+   
     if (
-      (this.props.search &&!prevProps.search)||
+      (this.props.search && !prevProps.search) ||
       // ((!prevProps.search && this.props.search) ||
-        prevProps.search !== this.props.search
+      prevProps.search !== this.props.search
     ) {
       this.fetchSearchData();
     }
@@ -43,25 +46,25 @@ class App extends Component {
     }
   }
 
-  fetchInitialData = () => {
-    // const request = new Request(
-    //   "https://my-json-server.typicode.com/HackSoftware/companies.db/db"
-    // );
-    // fetch(request)
-    //   .then(response => response.json())
-    //   .then(response => this.setState({ data: response },this.createOptionsForSelect))
-    //   .catch(error => console.log(error));
+  // fetchInitialData = () => {
+  //   // const request = new Request(
+  //   //   "https://my-json-server.typicode.com/HackSoftware/companies.db/db"
+  //   // );
+  //   // fetch(request)
+  //   //   .then(response => response.json())
+  //   //   .then(response => this.setState({ data: response },this.createOptionsForSelect))
+  //   //   .catch(error => console.log(error));
 
-    axios
-      .get("https://my-json-server.typicode.com/HackSoftware/companies.db/db")
-      .then(response => {
-        // console.log("Axios response.data: ", response.data);
-        this.setState({ data: response.data }, this.createOptionsForSelect);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
+  //   axios
+  //     .get("https://my-json-server.typicode.com/HackSoftware/companies.db/db")
+  //     .then(response => {
+  //       // console.log("Axios response.data: ", response.data);
+  //       this.setState({ data: response.data }, this.createOptionsForSelect);
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //     });
+  // };
   fetchSearchData = () => {
     let baseUrl = `https://my-json-server.typicode.com/HackSoftware/companies.db/company?q=`;
     baseUrl += this.props.search;
@@ -80,13 +83,12 @@ class App extends Component {
       .catch(err => {
         console.log(err);
       });
-      
   };
 
   filterData = () => {
     let filtered = [];
-    console.log('Filtered: ',this.props);
-    console.log(this.state.searched);
+    // console.log('Filtered: ',this.props);
+    // console.log(this.state.searched);
     if (!this.props.initFilter && this.state.searched && this.props.search) {
       filtered = this.state.searched;
     } else if (this.state.searched) {
@@ -94,12 +96,12 @@ class App extends Component {
       filtered = this.state.searched
         .filter(x => x.type === this.props.companyType)
         .filter(y => y.active === this.props.isActiv);
-    } else if (this.state.data.company) {
-      filtered = this.state.data.company
+    } else if (this.props.data.company) {
+      filtered = this.props.data.company
         .filter(x => x.type === this.props.companyType)
         .filter(y => y.active === this.props.isActiv);
     }
-    console.log('Filtered: ',filtered);
+    // console.log('Filtered: ',filtered);
     return filtered;
   };
   //onClickHandlers
@@ -131,24 +133,24 @@ class App extends Component {
   //     companyType: ""
   //   });
   // };
-
-  createOptionsForSelect = () => {
-    const options = this.state.data.companyType.map(x => x);
-    const addedEmptyOption = { id: 0, title: "" };
-    const result = [addedEmptyOption, ...options];
-    this.setState({ options: result });
-    return result;
-  };
+ 
+  // createOptionsForSelect = () => {
+  //   const options = this.props.data.companyType.map(x => x);
+  //   const addedEmptyOption = { id: 0, title: "" };
+  //   const result = [addedEmptyOption, ...options];
+  //   // this.setState({ options: result });
+  //   return result;
+  // };
 
   render() {
     // let companies = this.createCompaniesList();
-    let companyType = this.state.options;
+    let companyType = this.props.options;
     // console.log('RENDER: ', this.props)
     let filteredArr = this.filterData();
-    console.log(filteredArr)
+    // console.log(filteredArr)
     let grid = null;
     if (!this.props.search && !this.props.initFilter) {
-      grid = <Grid data={this.state.data.company} />;
+      grid = <Grid data={this.props.data.company} />;
     } else if (filteredArr.length > 0) {
       grid = <Grid data={filteredArr} />;
     } else {
@@ -173,22 +175,29 @@ class App extends Component {
     );
   }
 }
-const mapStateToProps=state=>{
-  console.log('State to props:', state)
-  return{
-    isActiv:state.filter.isActiv,
-    initFilter:state.filter.initFilter,
-    companyType:state.filter.companyType,
-    search:state.filter.search
-  }
-}
+const mapStateToProps = state => {
+  console.log("State to props:", state.fetch);
+  return {
+    isActiv: state.filter.isActiv,
+    initFilter: state.filter.initFilter,
+    companyType: state.filter.companyType,
+    search: state.filter.search,
+    data: {
+      company: state.fetch.data.company,
+      companyType:state.fetch.data.companyType
+    },
+    options:state.fetch.options
+  };
+};
 
 const mapDispatchToProps = dispatch => {
   return {
     //pass and execute action creators
     handleIsChecked: () => dispatch(isChecked()),
-    handleSelectChange:(event)=>dispatch(select(event)),
-    handleInputChange:(event)=>dispatch(input(event))
+    handleSelectChange: event => dispatch(select(event)),
+    handleInputChange: event => dispatch(input(event)),
+    fetchInitialData: () => dispatch(fetchInitialData()),
+    
   };
 };
 
