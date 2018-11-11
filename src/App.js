@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import "./App.css";
-import axios from "axios";
+// import axios from "axios";
 import { connect } from "react-redux";
 import Filters from "./components/filters/Filters/Filters";
 import Grid from "./components/grid/grid/Grid";
 import { isChecked, select, input } from "./store/actions/action_filters.js";
-import { fetchInitialData } from "./store/actions/action_fetch.js";
+import { fetchInitialData,fetchSearchData,clearSearch } from "./store/actions/action_fetch.js";
 
 class App extends Component {
   state = {
@@ -39,10 +39,11 @@ class App extends Component {
       // ((!prevProps.search && this.props.search) ||
       prevProps.search !== this.props.search
     ) {
-      this.fetchSearchData();
+      this.props.fetchSearchData(this.props.search);
     }
     if (this.props.search === "" && prevProps.search !== this.props.search) {
-      this.setState({ searched: null });
+      // this.setState({ searched: null });
+      this.props.clearSearch();
     }
   }
 
@@ -65,35 +66,35 @@ class App extends Component {
   //       console.log(err);
   //     });
   // };
-  fetchSearchData = () => {
-    let baseUrl = `https://my-json-server.typicode.com/HackSoftware/companies.db/company?q=`;
-    baseUrl += this.props.search;
-    // console.log(baseUrl);
-    // const request = new Request(baseUrl);
-    // fetch(request)
-    //   .then(response => response.json())
-    //   .then(response => this.setState({ searched: response }))
-    //   .catch(error => console.log(error));
+  // fetchSearchData = () => {
+  //   let baseUrl = `https://my-json-server.typicode.com/HackSoftware/companies.db/company?q=`;
+  //   baseUrl += this.props.search;
+  //   // console.log(baseUrl);
+  //   // const request = new Request(baseUrl);
+  //   // fetch(request)
+  //   //   .then(response => response.json())
+  //   //   .then(response => this.setState({ searched: response }))
+  //   //   .catch(error => console.log(error));
 
-    axios
-      .get(baseUrl)
-      .then(response => {
-        this.setState({ searched: response.data });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
+  //   axios
+  //     .get(baseUrl)
+  //     .then(response => {
+  //       this.setState({ searched: response.data });
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //     });
+  // };
 
   filterData = () => {
     let filtered = [];
     // console.log('Filtered: ',this.props);
     // console.log(this.state.searched);
-    if (!this.props.initFilter && this.state.searched && this.props.search) {
-      filtered = this.state.searched;
-    } else if (this.state.searched) {
+    if (!this.props.initFilter && this.props.searched && this.props.search) {
+      filtered = this.props.searched;
+    } else if (this.props.searched) {
       // console.log("In filter");
-      filtered = this.state.searched
+      filtered = this.props.searched
         .filter(x => x.type === this.props.companyType)
         .filter(y => y.active === this.props.isActiv);
     } else if (this.props.data.company) {
@@ -186,7 +187,8 @@ const mapStateToProps = state => {
       company: state.fetch.data.company,
       companyType:state.fetch.data.companyType
     },
-    options:state.fetch.options
+    options:state.fetch.options,
+    searched:state.fetch.searched
   };
 };
 
@@ -197,6 +199,8 @@ const mapDispatchToProps = dispatch => {
     handleSelectChange: event => dispatch(select(event)),
     handleInputChange: event => dispatch(input(event)),
     fetchInitialData: () => dispatch(fetchInitialData()),
+    fetchSearchData:(s)=>dispatch(fetchSearchData(s)),
+    clearSearch:()=>dispatch(clearSearch())
     
   };
 };
